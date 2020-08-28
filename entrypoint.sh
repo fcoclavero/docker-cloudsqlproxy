@@ -5,13 +5,13 @@ set -o pipefail
 
 # wrapper script for cloud_sql_proxy program
 
-# By using this entrypoint script in the docker image it provides a much 
-#  simplier method of running the proxy.  Instead of having to specify the 
+# By using this entrypoint script in the docker image it provides a much
+#  simplier method of running the proxy.  Instead of having to specify the
 #  exact sqlproxy command via the CMD or run - you are able to just set
 #  environment variables for the various settings
 #
 # This script assumes you will be using a service account as authenticaiton
-#  either by mounting the sevice account json into the docker container or 
+#  either by mounting the sevice account json into the docker container or
 #  setting the appropriate role on the default service account
 
 MISSING=""
@@ -58,16 +58,16 @@ usage() {
 
 # output version if you can
 version() {
-    if [ -x ${CLOUDSQL_PROXY_CMD} ]
-    then
-       echo
-       ${CLOUDSQL_PROXY_CMD} -version
-       echo
-    else
-       echo
-       echo "Unable to output version, can not execute proxy command (${CLOUDSQL_PROXY_CMD})"
-       echo
-    fi
+   if [ -x ${CLOUDSQL_PROXY_CMD} ]
+   then
+      echo
+      ${CLOUDSQL_PROXY_CMD} -version
+      echo
+   else
+      echo
+      echo "Unable to output version, can not execute proxy command (${CLOUDSQL_PROXY_CMD})"
+      echo
+   fi
 }
 
 # check if command line flag were passed
@@ -76,18 +76,21 @@ eval set -- "$TEMP"
 
 # extract options and their arguments into variables.
 while true ; do
-    case "$1" in
-        -v|--version)
-             version 
-             exit 1
-           ;;
-        -h|--help)
-             usage
-             exit 1
-           ;;
-        --) shift ; break ;;
-        *) echo "Internal error!" ; exit 1 ;;
-    esac
+   case "$1" in
+      -v|--version)
+         version
+         exit 1
+         ;;
+      -h|--help)
+         usage
+         exit 1
+         ;;
+      --)
+         shift
+         break
+         ;;
+      *) echo "Internal error!" ; exit 1 ;;
+   esac
 done
 
 # if passing in connection string via CLOUDSQL_CONNECTION_LIST env var
@@ -122,14 +125,14 @@ then
       echo
       for miss in ${MISSING}
       do
-         case $miss in 
-           "GOOGLE_PROJECT") echo "  GOOGLE_PROJECT: Google project name that CloudSQL instance resides"
-             ;;
-           "CLOUDSQL_ZONE") echo "  CLOUDSQL_ZONE: Google zone that instance resides in (us-central1-a, us-east1-b,..."
-             ;;
-           "CLOUDSQL_INSTANCE") echo "  CLOUDSQL_INSTANCE: Specific name of the CLoudSQL instance"
-             ;;
-         esac 
+         case $miss in
+            "GOOGLE_PROJECT") echo "  GOOGLE_PROJECT: Google project name that CloudSQL instance resides"
+               ;;
+            "CLOUDSQL_ZONE") echo "  CLOUDSQL_ZONE: Google zone that instance resides in (us-central1-a, us-east1-b,..."
+               ;;
+            "CLOUDSQL_INSTANCE") echo "  CLOUDSQL_INSTANCE: Specific name of the CLoudSQL instance"
+               ;;
+         esac
       done
       usage
       echo ; echo "Exitting!"
@@ -140,7 +143,7 @@ then
    CLOUDSQL_CONNECTION_LIST="${GOOGLE_PROJECT}:${CLOUDSQL_ZONE}:${CLOUDSQL_INSTANCE}=tcp:0.0.0.0:${PORT}"
 
 fi
-   
+
 # determine what credentials will be used if flag not set then use a service
 #  account json file.
 if [ "${CLOUDSQL_USE_DEFAULT_CREDENTIALS}" -eq "0" ]
@@ -150,7 +153,7 @@ then
       CREDENTIALS="-credential_file=${CLOUDSQL_CREDENTIAL_FILE}"
    else
       echo "Unable to read credential file: (${CLOUDSQL_CREDENTIAL_FILE})! - Exitting"
-      echo 
+      echo
       exit 1
    fi
 fi
