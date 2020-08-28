@@ -4,6 +4,8 @@ Google [Cloud SQL](https://cloud.google.com/sql) proxy service.
 
 This repo creates a wrapper (entrypoint) script to be used in the Google Cloud SQL [proxy container](https://cloud.google.com/sql/docs/mysql/connect-docker). The `entrypoint.sh` script autoruns when you run the docker container created using the Dockerfile in this repo.  All the settings for the Cloud SQL proxy are provided using environment variables - enabling a much simplier configuration.
 
+The image is also available in [Docker Hub](https://hub.docker.com/repository/docker/fcoclavero/docker-cloudsqlproxy)!
+
 ## Contents
 
 1. [Authentication](#authentication)
