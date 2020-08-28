@@ -11,6 +11,7 @@ This repo creates a wrapper (entrypoint) script to be used in the Google Cloud S
     1. [Connection string list environment variable](#1-connection-string-list-environment-variable)
     1. [Individual settings variables](#2-individual-settings-variables)
 3. [Additional settings](#additional-settings)
+4. [Example usage](#example-usage)
 
 ## Authentication
 
@@ -59,3 +60,33 @@ By specifying all of the environment variables bellow. This method supports only
 
 1. `CLOUDSQL_MAXCONNS`: the maximum number of database connections the proxy will support. The default is unlimited.
 2. `CLOUDSQL_LOGGING`: logging level. The default is verbose.
+
+## Example usage
+
+To build the image:
+
+```bash
+docker build . -t cloud-sql-proxy
+```
+
+To start the proxy:
+
+```bash
+docker run --env-file=.env -p 127.0.0.1:5432:5432 cloud-sql-proxy
+```
+
+where `.env` contains the configuration variables specified in the sections above. For example:
+
+```env
+CLOUDSQL_CREDENTIALS={"type":"service_account", ...}
+GOOGLE_PROJECT=my_project
+CLOUDSQL_ZONE=us-east1
+CLOUDSQL_INSTANCE=my_instance_name
+PORT=5432
+```
+
+It might be more confortable to run the proxy as a detached container (`-d` flag):
+
+```bash
+docker run --env-file=.env -p 127.0.0.1:5432:5432 -d cloud-sql-proxy
+```
