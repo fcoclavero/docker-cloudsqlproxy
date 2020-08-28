@@ -15,7 +15,7 @@ set -o pipefail
 #  setting the appropriate role on the default service account
 
 MISSING=""
-CREDENTIALS_PATH=""
+CREDENTIAL_FILE_PATH=""
 CLOUDSQL_PROXY_CMD="/cloud_sql_proxy"
 SQLPROXY_ENVFILE=${SQLPROXY_ENVFILE:-"/etc/sqlproxy.env"}
 
@@ -29,9 +29,10 @@ then
 fi
 
 # Init vars if not set in environment
-GOOGLE_PROJECT=${GOOGLE_PROJECT:-""}
+CLOUDSQ_CREDENTIALS=${CLOUDSQ_CREDENTIALS:-""}
 CLOUDSQL_ZONE=${CLOUDSQL_ZONE:-""}
 CLOUDSQL_INSTANCE=${CLOUDSQL_INSTANCE:-""}
+GOOGLE_PROJECT=${GOOGLE_PROJECT:-""}
 PORT=${PORT:-"3306"}
 
 # default to unlimited conns
@@ -39,6 +40,12 @@ CLOUDSQL_MAXCONNS=${CLOUDSQL_MAXCONNS-0}
 
 # default to specified path
 CLOUDSQL_CREDENTIAL_FILE=${CLOUDSQL_CREDENTIAL_FILE-"/etc/sqlproxy-service-account.json"}
+
+# if passed as env variable, save credentials to file
+if [ -n "${CLOUDSQL_CREDENTIALS}" ]
+then
+   echo ${CLOUDSQL_CREDENTIALS} > $CLOUDSQL_CREDENTIAL_FILE
+fi
 
 # default to verbose logging
 CLOUDSQL_LOGGING=${CLOUDSQL_LOGGING-"-verbose"}
@@ -150,7 +157,7 @@ if [ "${CLOUDSQL_USE_DEFAULT_CREDENTIALS}" -eq "0" ]
 then
    if [ -r ${CLOUDSQL_CREDENTIAL_FILE} ]
    then
-      CREDENTIALS_PATH="-credential_file=${CLOUDSQL_CREDENTIAL_FILE}"
+      CREDENTIAL_FILE_PATH="-credential_file=${CLOUDSQL_CREDENTIAL_FILE}"
    else
       echo "Unable to read credential file: (${CLOUDSQL_CREDENTIAL_FILE})! - Exitting"
       echo
@@ -159,4 +166,4 @@ then
 fi
 
 # launch proxy via exec to overlay existing shell
-exec ${CLOUDSQL_PROXY_CMD}  -max_connections=${CLOUDSQL_MAXCONNS} -instances=${CLOUDSQL_CONNECTION_LIST} ${CREDENTIALS_PATH}  ${CLOUDSQL_LOGGING}
+exec ${CLOUDSQL_PROXY_CMD}  -max_connections=${CLOUDSQL_MAXCONNS} -instances=${CLOUDSQL_CONNECTION_LIST} ${CREDENTIAL_FILE_PATH}  ${CLOUDSQL_LOGGING}
