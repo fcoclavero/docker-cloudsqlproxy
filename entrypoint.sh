@@ -15,7 +15,7 @@ set -o pipefail
 #  setting the appropriate role on the default service account
 
 MISSING=""
-CREDENTIALS=""
+CREDENTIALS_PATH=""
 CLOUDSQL_PROXY_CMD="/cloud_sql_proxy"
 SQLPROXY_ENVFILE=${SQLPROXY_ENVFILE:-"/etc/sqlproxy.env"}
 
@@ -150,7 +150,7 @@ if [ "${CLOUDSQL_USE_DEFAULT_CREDENTIALS}" -eq "0" ]
 then
    if [ -r ${CLOUDSQL_CREDENTIAL_FILE} ]
    then
-      CREDENTIALS="-credential_file=${CLOUDSQL_CREDENTIAL_FILE}"
+      CREDENTIALS_PATH="-credential_file=${CLOUDSQL_CREDENTIAL_FILE}"
    else
       echo "Unable to read credential file: (${CLOUDSQL_CREDENTIAL_FILE})! - Exitting"
       echo
@@ -159,4 +159,4 @@ then
 fi
 
 # launch proxy via exec to overlay existing shell
-exec ${CLOUDSQL_PROXY_CMD}  -max_connections=${CLOUDSQL_MAXCONNS} -instances=${CLOUDSQL_CONNECTION_LIST} ${CREDENTIALS}  ${CLOUDSQL_LOGGING}
+exec ${CLOUDSQL_PROXY_CMD}  -max_connections=${CLOUDSQL_MAXCONNS} -instances=${CLOUDSQL_CONNECTION_LIST} ${CREDENTIALS_PATH}  ${CLOUDSQL_LOGGING}
